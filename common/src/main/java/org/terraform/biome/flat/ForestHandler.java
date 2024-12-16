@@ -76,7 +76,7 @@ public class ForestHandler extends BiomeHandler {
     @Override
     public Material @NotNull [] getSurfaceCrust(@NotNull Random rand) {
         return new Material[] {
-                GenUtils.weightedRandomMaterial(rand, Material.GRASS_BLOCK, 35, Material.PODZOL, 3),
+                Material.GRASS_BLOCK,
                 Material.DIRT,
                 Material.DIRT,
                 GenUtils.randChoice(rand, Material.DIRT, Material.STONE),
@@ -104,7 +104,7 @@ public class ForestHandler extends BiomeHandler {
             if (GenUtils.chance(random, 99, 100) && data.getBiome(rawX, rawZ) == getBiome() && BlockUtils.isDirtLike(
                     data.getType(rawX, surfaceY, rawZ)))
             {
-                data.setType(rawX, surfaceY, rawZ, Material.DIRT_PATH);
+               // data.setType(rawX, surfaceY, rawZ, Material.DIRT_PATH);
             }
         }
         if (data.getType(rawX, surfaceY, rawZ) == Material.GRASS_BLOCK) {
@@ -115,7 +115,7 @@ public class ForestHandler extends BiomeHandler {
                 // Grass & Flowers
                 PlantBuilder.GRASS.build(data, rawX, surfaceY + 1, rawZ);
                 if (random.nextBoolean()) {
-                    PlantBuilder.TALL_GRASS.build(data, rawX, surfaceY + 1, rawZ);
+                    //PlantBuilder.TALL_GRASS.build(data, rawX, surfaceY + 1, rawZ);
                 }
                 else {
                     BlockUtils.pickFlower().build(data, rawX, surfaceY + 1, rawZ);
@@ -129,57 +129,61 @@ public class ForestHandler extends BiomeHandler {
                                    @NotNull Random random,
                                    @NotNull PopulatorDataAbstract data)
     {
-        // Most forest chunks have a big tree
-        if (TConfig.c.TREES_FOREST_BIG_ENABLED && GenUtils.chance(random, 6, 10)) {
-            int treeX = GenUtils.randInt(random, 2, 12) + data.getChunkX() * 16;
-            int treeZ = GenUtils.randInt(random, 2, 12) + data.getChunkZ() * 16;
-            if (data.getBiome(treeX, treeZ) == getBiome()) {
-                int treeY = GenUtils.getHighestGround(data, treeX, treeZ);
-
-                if (BlockUtils.isDirtLike(data.getType(treeX, treeY, treeZ))) {
-                    FractalTypes.Tree.FOREST.build(tw, new SimpleBlock(data, treeX, treeY, treeZ));
-                }
-            }
-        }
+        //// Most forest chunks have a big tree
+        //if (TConfig.c.TREES_FOREST_BIG_ENABLED && GenUtils.chance(random, 6, 10)) {
+        //    int treeX = GenUtils.randInt(random, 2, 12) + data.getChunkX() * 16;
+        //    int treeZ = GenUtils.randInt(random, 2, 12) + data.getChunkZ() * 16;
+        //    if (data.getBiome(treeX, treeZ) == getBiome()) {
+        //        int treeY = GenUtils.getHighestGround(data, treeX, treeZ);
+//
+        //        if (BlockUtils.isDirtLike(data.getType(treeX, treeY, treeZ))) {
+        //            FractalTypes.Tree.FOREST.build(tw, new SimpleBlock(data, treeX, treeY, treeZ));
+        //        }
+        //    }
+        //}
 
         // Small trees
         SimpleLocation[] trees = GenUtils.randomObjectPositions(tw, data.getChunkX(), data.getChunkZ(), 8);
 
         for (SimpleLocation sLoc : trees) {
-            int treeY = GenUtils.getHighestGround(data, sLoc.getX(), sLoc.getZ());
-            sLoc.setY(treeY);
-            if (data.getBiome(sLoc.getX(), sLoc.getZ()) == getBiome() && BlockUtils.isDirtLike(data.getType(sLoc.getX(),
-                    sLoc.getY(),
-                    sLoc.getZ())))
-            {
-                FractalTypes.Tree.NORMAL_SMALL.build(tw, new SimpleBlock(data, sLoc.getX(), sLoc.getY(), sLoc.getZ()));
+            if(GenUtils.chance(random, 6, 10)) {
+                int treeY = GenUtils.getHighestGround(data, sLoc.getX(), sLoc.getZ());
+                sLoc.setY(treeY);
+                if (data.getBiome(sLoc.getX(), sLoc.getZ()) == getBiome()
+                    && BlockUtils.isDirtLike(data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ())))
+                {
+                    FractalTypes.Tree.NORMAL_SMALL.build(
+                            tw,
+                            new SimpleBlock(data, sLoc.getX(), sLoc.getY(), sLoc.getZ())
+                    );
+                }
             }
         }
 
         // Small rocks
-        SimpleLocation[] rocks = GenUtils.randomObjectPositions(tw, data.getChunkX(), data.getChunkZ(), 10);
-
-        for (SimpleLocation sLoc : rocks) {
-            sLoc.setY(GenUtils.getHighestGround(data, sLoc.getX(), sLoc.getZ()));
-            if (data.getBiome(sLoc.getX(), sLoc.getZ()) == getBiome()) {
-                if (BlockUtils.isDirtLike(data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()))
-                    || data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()) == Material.COBBLESTONE
-                    || data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()) == Material.MOSSY_COBBLESTONE
-                    || data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()) == Material.STONE)
-                {
-                    int ny = GenUtils.randInt(random, -1, 1);
-                    spawnRock(random, data, sLoc.getX(), sLoc.getY() + ny, sLoc.getZ());
-                    if (GenUtils.chance(random, 1, 3)) {
-                        spawnRock(
-                                random,
-                                data,
-                                GenUtils.randInt(random, -1, 1) + sLoc.getX(),
-                                sLoc.getY() + ny + 1,
-                                sLoc.getZ() + GenUtils.randInt(random, -1, 1)
-                        );
-                    }
-                }
-            }
-        }
+       // SimpleLocation[] rocks = GenUtils.randomObjectPositions(tw, data.getChunkX(), data.getChunkZ(), 10);
+//
+       // for (SimpleLocation sLoc : rocks) {
+       //     sLoc.setY(GenUtils.getHighestGround(data, sLoc.getX(), sLoc.getZ()));
+       //     if (data.getBiome(sLoc.getX(), sLoc.getZ()) == getBiome()) {
+       //         if (BlockUtils.isDirtLike(data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()))
+       //             || data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()) == Material.COBBLESTONE
+       //             || data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()) == Material.MOSSY_COBBLESTONE
+       //             || data.getType(sLoc.getX(), sLoc.getY(), sLoc.getZ()) == Material.STONE)
+       //         {
+       //             int ny = GenUtils.randInt(random, -1, 1);
+       //             spawnRock(random, data, sLoc.getX(), sLoc.getY() + ny, sLoc.getZ());
+       //             if (GenUtils.chance(random, 1, 3)) {
+       //                 spawnRock(
+       //                         random,
+       //                         data,
+       //                         GenUtils.randInt(random, -1, 1) + sLoc.getX(),
+       //                         sLoc.getY() + ny + 1,
+       //                         sLoc.getZ() + GenUtils.randInt(random, -1, 1)
+       //                 );
+       //             }
+       //         }
+       //     }
+       // }
     }
 }
